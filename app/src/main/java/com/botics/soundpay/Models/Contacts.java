@@ -5,7 +5,8 @@ public class Contacts {
 
     }
 
-    String name,number,url;
+    String name,url;
+    String number;
     boolean isContact;
 
     public String getName() {

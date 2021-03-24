@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "551465891643",
+    "project_id": "soundpay-25bcd",
+    "storage_bucket": "soundpay-25bcd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:551465891643:android:8ee5d82b1d3108d6f1291e",
+        "android_client_info": {
+          "package_name": "com.botics.soundpay"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "551465891643-quiaq50rq2ea872fp5u88h1rpdbm0104.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB83gYF1Jz-d4ap6EkIZM3050pJslqq0tc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "551465891643-quiaq50rq2ea872fp5u88h1rpdbm0104.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -33,7 +33,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_gravity="right"
                 android:layout_height="59dp"
-                android:src="@drawable/ic_launcher_background"/>
+                android:src="@drawable/mine"/>
         </RelativeLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
@@ -98,57 +98,51 @@
                 android:textSize="@dimen/_10sdp"
                 android:layout_height="wrap_content"/>
         </RelativeLayout>
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_below="@+id/card"
-            app:cardElevation="@dimen/_8sdp"
-            android:layout_marginTop="@dimen/_20sdp"
-            app:cardCornerRadius="@dimen/_10sdp"
-            android:layout_marginLeft="@dimen/_10sdp"
-            android:layout_marginRight="@dimen/_10sdp"
-            android:layout_height="@dimen/_150sdp">
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <Button
-                    android:text="SoundPay"
-                    android:fontFamily="@raw/product"
-                    android:textAllCaps="false"
-                    android:id="@+id/soundPay"
-                    android:layout_marginTop="@dimen/_30sdp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_width="@dimen/_250sdp"
-                    android:layout_height="@dimen/_45sdp"/>
-                <Button
-                    android:text="SoundReceive"
-                    android:fontFamily="@raw/product"
-                    android:textAllCaps="false"
-                    android:layout_below="@+id/soundPay"
-                    android:layout_centerHorizontal="true"
-                    android:layout_width="@dimen/_250sdp"
-                    android:layout_height="@dimen/_45sdp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="View History"
-                    android:fontFamily="@raw/product"
-                    android:textStyle="bold"
-                    android:layout_centerHorizontal="true"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="@dimen/_10sdp"
-                    android:textSize="@dimen/_10sdp"
-                    android:layout_height="wrap_content"/>
-            </RelativeLayout>
-
-        </androidx.cardview.widget.CardView>
+       <RelativeLayout
+           android:layout_width="match_parent"
+           android:layout_below="@+id/card"
+           android:background="@drawable/card_bg_2"
+           android:layout_marginTop="@dimen/_30sdp"
+           android:layout_height="match_parent">
+           <View
+               android:layout_width="@dimen/_30sdp"
+               android:background="@drawable/card_bg"
+               android:layout_centerHorizontal="true"
+               android:layout_marginTop="@dimen/_10sdp"
+               android:layout_height="@dimen/_4sdp"/>
+           <TextView
+               android:text="Recent Transactions"
+               android:layout_marginLeft="@dimen/_10sdp"
+               android:textSize="@dimen/_12sdp"
+               android:textColor="#000"
+               android:fontFamily="@raw/product"
+               android:layout_marginTop="@dimen/_25sdp"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"/>
+       </RelativeLayout>
     </RelativeLayout>
     <TextView
         android:layout_width="wrap_content"
         android:text="SoundPay V1.0"
         android:fontFamily="@raw/product"
         android:textStyle="bold"
+        android:visibility="gone"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="@dimen/_10sdp"
         android:textSize="@dimen/_10sdp"
         android:layout_height="wrap_content"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:id="@+id/new_request"
+        android:src="@drawable/ic_plane"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        app:backgroundTint="#B8E7FD"
+        android:backgroundTint="#B8E7FD"
+        android:layout_marginRight="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_30sdp"
+        android:layout_height="wrap_content"/>
+
 </RelativeLayout>
