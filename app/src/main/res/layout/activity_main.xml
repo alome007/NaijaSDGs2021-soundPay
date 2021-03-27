@@ -32,8 +32,7 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
                 android:layout_gravity="right"
-                android:layout_height="59dp"
-                android:src="@drawable/mine"/>
+                android:layout_height="59dp" />
         </RelativeLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
@@ -41,64 +40,71 @@
             android:layout_marginTop="@dimen/_minus17sdp"
             android:id="@+id/contactRecyclerView"
             android:layout_height="wrap_content"/>
+
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:background="@drawable/card_bg"
-            android:layout_marginLeft="@dimen/_10sdp"
-            android:layout_marginRight="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_20sdp"
             android:id="@+id/card"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_95sdp"
             android:layout_below="@+id/contactRecyclerView"
-            android:layout_height="@dimen/_95sdp">
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginTop="26dp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:background="@drawable/card_bg">
+
             <ImageView
                 android:layout_width="@dimen/_50sdp"
-                android:src="@drawable/ic_plane"
+                android:layout_height="@dimen/_50sdp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/_20sdp"
-                android:layout_height="@dimen/_50sdp"/>
+                android:src="@drawable/ic_plane" />
+
             <RelativeLayout
-                android:layout_width="wrap_content"
-                android:paddingBottom="@dimen/_5sdp"
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingLeft="@dimen/_15sdp"
                 android:id="@+id/balance_bg"
-                android:background="@drawable/card_wallet"
-                android:paddingRight="@dimen/_15sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_100sdp"
                 android:layout_marginTop="@dimen/_15sdp"
-                android:layout_height="wrap_content">
+                android:background="@drawable/card_wallet"
+                android:paddingLeft="@dimen/_15sdp"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingRight="@dimen/_15sdp"
+                android:paddingBottom="@dimen/_5sdp">
+
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="Your Balance"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@raw/product"
-                    android:textStyle="bold"
+                    android:text="Your Balance"
                     android:textSize="@dimen/_12sdp"
-                    android:layout_height="wrap_content"/>
+                    android:textStyle="bold" />
             </RelativeLayout>
+
             <TextView
+                android:id="@+id/balance"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/balance_bg"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:fontFamily="@raw/product"
                 android:text="NGN1000"
                 android:textColor="#000"
-                android:fontFamily="@raw/product"
-                android:textSize="@dimen/_25sdp"
-                android:id="@+id/balance"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@+id/balance_bg"
-                android:layout_height="wrap_content"/>
+                android:textSize="@dimen/_25sdp" />
+
             <TextView
                 android:layout_width="wrap_content"
-                android:text="Tap to Fund"
-                android:fontFamily="@raw/product"
-                android:textStyle="bold"
-                android:layout_centerHorizontal="true"
+                android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
                 android:layout_marginBottom="@dimen/_5sdp"
+                android:fontFamily="@raw/product"
+                android:text="Tap to Fund"
                 android:textSize="@dimen/_10sdp"
-                android:layout_height="wrap_content"/>
+                android:textStyle="bold" />
         </RelativeLayout>
-       <RelativeLayout
+
+        <RelativeLayout
            android:layout_width="match_parent"
            android:layout_below="@+id/card"
            android:background="@drawable/card_bg_2"

@@ -8,7 +8,7 @@
         android:layout_height="match_parent">
         <ImageView
             android:layout_width="@dimen/_200sdp"
-            android:src="@drawable/ic_welcome"
+            android:src="@drawable/ic_verify"
             android:layout_marginTop="@dimen/_80sdp"
             android:layout_height="@dimen/_100sdp"/>
         <LinearLayout
@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="New\nAccount"
+                    android:text="BVN\nVerification"
                     android:textColor="#000"
                     android:fontFamily="@raw/product"
                     android:textStyle="bold"
@@ -39,38 +39,40 @@
                     <LinearLayout
                         android:layout_width="@dimen/_40sdp"
                         android:gravity="center"
-                        android:id="@+id/upload_picture"
+                        android:visibility="invisible"
                         android:layout_marginTop="@dimen/_15sdp"
                         android:layout_marginLeft="@dimen/_130sdp"
                         android:background="@drawable/circle_reg"
                         android:layout_height="@dimen/_40sdp">
-
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="87dp"
-                            android:layout_gravity="center"
-                            android:id="@+id/img_placeholder"
-                            android:src="@drawable/ic_outline_camera_alt_24" />
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_width="@dimen/_30sdp"
-                            android:visibility="gone"
-                            android:id="@+id/img"
+                            android:visibility="invisible"
+                            android:layout_width="@dimen/_20sdp"
                             android:src="@drawable/ic_photo_camera"
                             android:layout_gravity="center"
-                            android:layout_height="@dimen/_30sdp"/>
+                            android:layout_height="@dimen/_20sdp"/>
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:layout_width="@dimen/_20sdp"
+                            android:visibility="gone"
+                            android:src="@drawable/ic_photo_camera"
+                            android:layout_gravity="center"
+                            android:layout_height="@dimen/_20sdp"/>
                     </LinearLayout>
                     <TextView
                         android:layout_width="wrap_content"
-                        android:text="Upload Picture"
+                        android:text="Skip"
+                        android:visibility="gone"
                         android:layout_marginLeft="@dimen/_115sdp"
-                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginTop="@dimen/_minus45sdp"
                         android:fontFamily="@raw/product"
+                        android:layout_gravity="right"
+                        android:layout_marginRight="@dimen/_35sdp"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
 
 
             </LinearLayout>
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:layout_marginLeft="@dimen/_20sdp"
@@ -84,22 +86,12 @@
                     android:layout_height="wrap_content"/>
                 <EditText
                     android:layout_width="@dimen/_250sdp"
-                    android:id="@+id/email"
-                    android:drawableStart="@drawable/ic_outline_email_24"
+                    android:drawableStart="@drawable/ic_mail"
                     android:hint="john.doe@email.com"
                     android:inputType="textEmailAddress"
                     android:fontFamily="@raw/product"
                     android:paddingLeft="@dimen/_10sdp"
                     android:drawablePadding="@dimen/_10sdp"
-                    android:layout_height="wrap_content"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="Username"
-                    android:id="@+id/email_error"
-                    android:visibility="gone"
-                    android:textColor="#CF0909"
-                    android:fontFamily="@raw/product"
-                    android:layout_marginLeft="@dimen/_5sdp"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
             <LinearLayout
@@ -110,15 +102,15 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="Username"
+                    android:text="Full Name"
                     android:fontFamily="@raw/product"
                     android:layout_marginLeft="@dimen/_5sdp"
                     android:layout_height="wrap_content"/>
                 <EditText
                     android:layout_width="@dimen/_250sdp"
-                    android:drawableStart="@drawable/ic_baseline_alternate_email_24"
-                    android:hint="John"
-                    android:id="@+id/username"
+                    android:drawableStart="@drawable/ic_baseline_person_outline_24"
+                    android:hint="John Doe"
+                    android:id="@+id/full_name"
                     android:inputType="textPersonName"
                     android:fontFamily="@raw/product"
                     android:paddingLeft="@dimen/_10sdp"
@@ -127,7 +119,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:text="Username"
-                    android:id="@+id/user_error"
+                    android:id="@+id/name_error"
                     android:visibility="gone"
                     android:textColor="#CF0909"
                     android:fontFamily="@raw/product"
@@ -142,17 +134,17 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="Password"
+                    android:text="Enter Your BVN"
                     android:fontFamily="@raw/product"
                     android:layout_marginLeft="@dimen/_5sdp"
                     android:layout_height="wrap_content"/>
                 <EditText
                     android:layout_width="@dimen/_250sdp"
                     android:drawableStart="@drawable/ic_outline_lock_24"
-                    android:hint="******"
-                    android:id="@+id/password"
-                    android:drawableEnd="@drawable/ic_outline_remove_red_eye_24"
-                    android:inputType="textPassword"
+                    android:hint="21000000"
+                    android:inputType="number"
+                    android:maxLength="11"
+                    android:id="@+id/bvn"
                     android:fontFamily="@raw/product"
                     android:paddingLeft="@dimen/_10sdp"
                     android:drawablePadding="@dimen/_10sdp"
@@ -160,7 +152,40 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:text="Username"
-                    android:id="@+id/password_error"
+                    android:id="@+id/bvn_error"
+                    android:visibility="gone"
+                    android:textColor="#CF0909"
+                    android:fontFamily="@raw/product"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginLeft="@dimen/_20sdp"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Enter Your Phone number"
+                    android:fontFamily="@raw/product"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_height="wrap_content"/>
+                <EditText
+                    android:layout_width="@dimen/_250sdp"
+                    android:drawableStart="@drawable/ic_outline_phone_24"
+                    android:hint="0812345678"
+                    android:inputType="number"
+                    android:maxLength="11"
+                    android:id="@+id/phone"
+                    android:fontFamily="@raw/product"
+                    android:paddingLeft="@dimen/_10sdp"
+                    android:drawablePadding="@dimen/_10sdp"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Username"
+                    android:id="@+id/phone_error"
                     android:visibility="gone"
                     android:textColor="#CF0909"
                     android:fontFamily="@raw/product"
@@ -171,12 +196,18 @@
                 android:layout_width="@dimen/_250sdp"
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/_10sdp"
-                android:text="Register"
-                android:id="@+id/register"
+                android:text="Proceed"
+                android:id="@+id/submit"
                 android:textAllCaps="false"
                 android:fontFamily="@raw/product"
                 android:background="@drawable/buttons"
                 android:layout_height="@dimen/_35sdp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Why do we need this?"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>
