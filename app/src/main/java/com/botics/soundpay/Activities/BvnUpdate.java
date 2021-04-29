@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,7 +27,9 @@ import com.android.volley.toolbox.Volley;
 import com.botics.soundpay.R;
 import com.botics.soundpay.Utils.Constants;
 import com.botics.soundpay.Utils.Loader;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.JsonObject;
@@ -88,7 +91,7 @@ public class BvnUpdate  extends AppCompatActivity {
                      uid=sharedPreferences.getString(Constants.UID,"");
                     JsonObject object=new JsonObject();
 
-                    Loader loader=new Loader();
+                    Loader loader=new Loader(null);
                     loader.setCancelable(false);
                     loader.show(getSupportFragmentManager(), "");
 
@@ -98,24 +101,27 @@ public class BvnUpdate  extends AppCompatActivity {
                             new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(String response) {
-
+Log.d("Crypto", response);
                                     loader.dismiss();
 
                                     if (response==null){
 
                                     }else {
-                                        Loader loader = new Loader();
+                                        Loader loader = new Loader(null);
                                         loader.setCancelable(false);
                                         loader.show(getSupportFragmentManager(), "");
                                         JSONObject result ;
+                                        Log.d("Crypto", encrypt("{\"uid\":\""+ FirebaseAuth.getInstance().getCurrentUser().getUid() +"\",\"balance\":"+1000.00+"}"));
                                         try {
                                             result = new JSONObject(response);
                                             if (result.getString("status").equalsIgnoreCase("success")){
+                                                String bal = encrypt("{\"uid\":\""+uid+"\",\"balance\":"+1000.00+"}");
+                                                Log.d("Crypto", "I got here");
                                                 String accountNumber=result.getJSONObject("data").getString("account_number");
                                                 FirebaseFirestore db=FirebaseFirestore.getInstance();
-                                                db.collection("users").document(uid)
+                                                db.collection("users").document(FirebaseAuth.getInstance().getUid())
                                                         .update("name", fullName.getText().toString(),
-                                                                "accountNumber", accountNumber, "number", Phone.getText().toString())
+                                                                "accountNumber", accountNumber, "number", Phone.getText().toString(), "balance", bal)
                                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                             @Override
                                                             public void onSuccess(Void aVoid) {
@@ -124,18 +130,25 @@ public class BvnUpdate  extends AppCompatActivity {
                                                                 SharedPreferences.Editor editor=sharedPreferences.edit();
                                                                 editor.putString(Constants.ACCOUNT_NUMBER, accountNumber);
                                                                 editor.putString(Constants.NUMBER, Phone.getText().toString());
-                                                                String crypto=  encrypt("{\"uid\":\""+uid+"\",\"balance\":"+0.00+"}");
+                                                                String crypto=  encrypt("{\"uid\":\""+uid+"\",\"balance\":"+1000.00+"}");
                                                                 editor.putString(Constants.CRYPTO, crypto);
                                                                 editor.putString(Constants.IV, encodetoBase64(iv));
                                                                 editor.apply();
                                                                 startActivity(new Intent(BvnUpdate.this, MainActivity.class));
                                                                 finish();
                                                             }
-                                                        });
+                                                        }).addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Log.d("Errrr", e.getMessage());
+                                                        loader.dismiss();
+                                                    }
+                                                });
                                             }else{
-
+                                                loader.dismiss();
                                             }
                                         } catch (JSONException e) {
+                                            Log.d("Errrr", e.getMessage());
                                             e.printStackTrace();
                                         }
                                     }

@@ -13,6 +13,11 @@ import com.botics.soundpay.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 public class AccountNumber extends BottomSheetDialogFragment {
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.SheetDialog);
+    }
     View view;
     @Nullable
     @Override

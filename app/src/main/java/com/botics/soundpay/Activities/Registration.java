@@ -1,15 +1,21 @@
 package com.botics.soundpay.Activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +36,8 @@ import com.botics.soundpay.Utils.Loader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.hash.Hashing;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -42,6 +50,8 @@ import com.google.firebase.storage.UploadTask;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import static android.view.MotionEvent.*;
+
 public class Registration  extends AppCompatActivity {
     Button register;
     boolean usernameTaken,emailTaken;
@@ -52,6 +62,8 @@ public class Registration  extends AppCompatActivity {
     ImageView placeholder,image;
     Uri selected_photo;
     String url;
+    private boolean passwordShown = false;
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,7 +72,7 @@ public class Registration  extends AppCompatActivity {
         init();
         initUI();
         initTextWatcher();
-
+        addPasswordViewToggle();
         uploadPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,34 +100,59 @@ public class Registration  extends AppCompatActivity {
                             emailError.setText("Email taken, please try another");
                         }
                     }else{
-                        Loader loader=new Loader();
+                        Loader loader=new Loader(null);
                         loader.setCancelable(false);
                         loader.show(getSupportFragmentManager(), "");
-                        if (selected_photo==null){
-                            Contacts contacts=new Contacts("", "", "https://github.com/square/picasso/raw/master/website/static/sample.png", false, email.getText().toString(), generateUID(username.getText().toString(), email.getText().toString()), username.getText().toString(), HashPassword(password.getText().toString()), "");
-                            FirebaseFirestore db=FirebaseFirestore.getInstance();
-                            db.collection("users").document(generateUID(username.getText().toString(), email.getText().toString())).set(contacts).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    loader.dismiss();
-                                    SharedPreferences sharedPreferences=getSharedPreferences(Constants.SHARED_PREF, MODE_PRIVATE );
-                                    SharedPreferences.Editor editor=sharedPreferences.edit();
-                                    editor.putString(Constants.EMAIL, email.getText().toString());
-                                    editor.putString(Constants.UID, generateUID(username.getText().toString(), email.getText().toString()));
-                                    editor.apply();
-                                    startActivity(new Intent(Registration.this, BvnUpdate.class));
-                                    finish();
 
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    loader.dismiss();
-                                }
-                            });
-                        }else{
-                            uploadAndProceed(loader);
-                        }
+                        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                                    @Override
+                                    public void onSuccess(AuthResult authResult) {
+                                        if (selected_photo==null){
+                                            Contacts contacts=new Contacts("", "", "https://github.com/square/picasso/raw/master/website/static/sample.png", false, email.getText().toString(), authResult.getUser().getUid(), username.getText().toString(), HashPassword(password.getText().toString()), "", "");
+                                            FirebaseFirestore db=FirebaseFirestore.getInstance();
+                                            db.collection("users").document(authResult.getUser().getUid()).set(contacts).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    FirebaseAuth.getInstance().signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                                                        @Override
+                                                        public void onSuccess(AuthResult authResult) {
+                                                            loader.dismiss();
+                                                            SharedPreferences sharedPreferences=getSharedPreferences(Constants.SHARED_PREF, MODE_PRIVATE );
+                                                            SharedPreferences.Editor editor=sharedPreferences.edit();
+                                                            editor.putString(Constants.EMAIL, email.getText().toString());
+                                                            editor.putString(Constants.UID, generateUID(username.getText().toString(), email.getText().toString()));
+                                                            editor.apply();
+                                                            startActivity(new Intent(Registration.this, BvnUpdate.class));
+                                                            finish();
+                                                        }
+                                                    }).addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+
+                                                        }
+                                                    });
+
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    loader.dismiss();
+                                                }
+                                            });
+                                        }else{
+                                            uploadAndProceed(loader);
+                                        }
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                emailError.setVisibility(View.VISIBLE);
+                                emailError.setText(e.getMessage());
+                                loader.dismiss();
+                            }
+                        });
+
                     }
 
 
@@ -132,6 +169,40 @@ public class Registration  extends AppCompatActivity {
             startActivity(new Intent(Registration.this, MainActivity.class));
             finish();
         }
+    }
+
+    private void addPasswordViewToggle() {
+        password.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_RIGHT = 2; //index
+                if (!password.getText().toString().isEmpty()){
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        if (event.getRawX() >= (password.getRight() - password.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                            if (passwordShown) {
+                                passwordShown = false;
+                                // 129 is obtained by bitwise ORing InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD
+                                password.setInputType(129);
+
+                                // Need to call following as the font is changed to mono-space by default for password fields
+                                password.setTypeface(Typeface.SANS_SERIF);
+                                password.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_outline_remove_red_eye_24, 0); // This is lock icon
+                            } else {
+                                passwordShown = true;
+                                password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+                                password.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_outline_remove_red_eye_24, 0); // Unlock icon
+                            }
+
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+               return false;
+            }
+        });
     }
 
     private void uploadAndProceed(Loader loader) {
@@ -151,26 +222,45 @@ public class Registration  extends AppCompatActivity {
                                 public void onSuccess(Uri uri) {
                                    loader.dismiss();
                                     url=uri.toString();
-                                    Contacts contacts=new Contacts("", "", url, false, email.getText().toString(), generateUID(username.getText().toString(), email.getText().toString()), username.getText().toString(), HashPassword(password.getText().toString()), "");
-                                    FirebaseFirestore db=FirebaseFirestore.getInstance();
-                                    db.collection("users").document(generateUID(username.getText().toString(), email.getText().toString())).set(contacts).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            loader.dismiss();
-                                            SharedPreferences sharedPreferences=getSharedPreferences(Constants.SHARED_PREF, MODE_PRIVATE );
-                                            SharedPreferences.Editor editor=sharedPreferences.edit();
-                                            editor.putString(Constants.EMAIL, email.getText().toString());
-                                            editor.putString(Constants.UID, generateUID(username.getText().toString(), email.getText().toString()));
-                                            editor.apply();
-                                            startActivity(new Intent(Registration.this, BvnUpdate.class));
-                                            finish();
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            loader.dismiss();
-                                        }
-                                    });
+                                   FirebaseAuth.getInstance().createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                                           .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                                               @Override
+                                               public void onSuccess(AuthResult authResult) {
+                                                   Contacts contacts=new Contacts("", "", url, false, email.getText().toString(), authResult.getUser().getUid(), username.getText().toString(), HashPassword(password.getText().toString()), "", "");
+                                                   FirebaseFirestore db=FirebaseFirestore.getInstance();
+                                                   db.collection("users").document(authResult.getUser().getUid()).set(contacts).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                       @Override
+                                                       public void onSuccess(Void aVoid) {
+                                                          FirebaseAuth.getInstance().signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                                                                  .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                                                                      @Override
+                                                                      public void onSuccess(AuthResult authResult) {
+                                                                          loader.dismiss();
+                                                                          SharedPreferences sharedPreferences=getSharedPreferences(Constants.SHARED_PREF, MODE_PRIVATE );
+                                                                          SharedPreferences.Editor editor=sharedPreferences.edit();
+                                                                          editor.putString(Constants.EMAIL, email.getText().toString());
+                                                                          editor.putString(Constants.UID, generateUID(username.getText().toString(), email.getText().toString()));
+                                                                          editor.apply();
+                                                                          startActivity(new Intent(Registration.this, BvnUpdate.class));
+                                                                          finish();
+                                                                      }
+                                                                  });
+                                                       }
+                                                   }).addOnFailureListener(new OnFailureListener() {
+                                                       @Override
+                                                       public void onFailure(@NonNull Exception e) {
+                                                           loader.dismiss();
+                                                       }
+                                                   });
+                                               }
+                                           }).addOnFailureListener(new OnFailureListener() {
+                                       @Override
+                                       public void onFailure(@NonNull Exception e) {
+                                           emailError.setVisibility(View.VISIBLE);
+                                           emailError.setText(e.getMessage());
+                                           loader.dismiss();
+                                       }
+                                   });
                                 }
                             });
                         }

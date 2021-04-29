@@ -12,6 +12,7 @@ public class Contacts {
     String uid;
     String password;
     String accountNumber;
+    String balance;
 
     public String getPassword() {
         return password;
@@ -86,7 +87,16 @@ public class Contacts {
         this.accountNumber = accountNumber;
     }
 
-    public Contacts(String name, String number, String url, boolean isContact, String email, String uid, String username, String password, String  accountNumber) {
+    public String getBalance() {
+        return balance;
+    }
+
+    public void setBalance(String balance) {
+        this.balance = balance;
+    }
+
+    public Contacts(String name, String number, String url, boolean isContact, String email,
+                    String uid, String username, String password, String  accountNumber, String balance) {
         this.name = name;
         this.number = number;
         this.url = url;
@@ -96,5 +106,6 @@ public class Contacts {
         this.username=username;
         this.password=password;
         this.accountNumber=accountNumber;
+       this.balance=balance;
     }
 }

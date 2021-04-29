@@ -53,10 +53,11 @@
 
             <ImageView
                 android:layout_width="@dimen/_50sdp"
+                android:rotation="30"
                 android:layout_height="@dimen/_50sdp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/_20sdp"
-                android:src="@drawable/ic_plane" />
+                android:src="@drawable/card_wallet_2" />
 
             <RelativeLayout
                 android:id="@+id/balance_bg"
@@ -121,10 +122,17 @@
                android:layout_marginLeft="@dimen/_10sdp"
                android:textSize="@dimen/_12sdp"
                android:textColor="#000"
+               android:id="@+id/text"
                android:fontFamily="@raw/product"
                android:layout_marginTop="@dimen/_25sdp"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_below="@+id/text"
+                android:id="@+id/historyRecycler"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_height="wrap_content"/>
        </RelativeLayout>
     </RelativeLayout>
     <TextView

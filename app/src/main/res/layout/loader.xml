@@ -4,7 +4,18 @@
     android:layout_height="match_parent">
     <ProgressBar
         android:layout_width="@dimen/_25sdp"
+        android:id="@+id/prog"
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
         android:layout_height="@dimen/_25sdp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/prog"
+        android:text="Loading"
+        android:id="@+id/txt"
+        android:padding="@dimen/_5sdp"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content"/>
 </RelativeLayout>

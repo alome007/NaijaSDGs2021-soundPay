@@ -1,5 +1,6 @@
 package com.botics.soundpay.Activities;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -27,11 +28,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.botics.soundpay.Adapters.ContactAdapter;
+import com.botics.soundpay.Adapters.HistoryAdapter;
+import com.botics.soundpay.Fragments.TransactionActivity;
+import com.botics.soundpay.Fragments.profileViewer;
+import com.botics.soundpay.Listeners.RecyclerItemClickListener;
 import com.botics.soundpay.Models.Contacts;
+import com.botics.soundpay.Models.HistoryModel;
 import com.botics.soundpay.R;
 import com.botics.soundpay.Utils.AccountNumber;
 import com.botics.soundpay.Utils.Constants;
 import com.botics.soundpay.Utils.Utils;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,13 +47,20 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.crypto.Cipher;
@@ -58,7 +73,11 @@ public class MainActivity  extends AppCompatActivity {
     ContactAdapter adapter;
     RecyclerView recyclerView;
     RelativeLayout fund;
+    FloatingActionButton new_request;
     ImageView avatar;
+    RecyclerView historyRecycler;
+    HistoryAdapter historyAdapter;
+    ArrayList<HistoryModel> historyArrayList=new ArrayList<>();
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +86,13 @@ public class MainActivity  extends AppCompatActivity {
         initUI();
         initData();
         setupProfile();
+
+        new_request.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TransactionActivity().show(getSupportFragmentManager(), "");
+            }
+        });
         fund.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,23 +100,44 @@ public class MainActivity  extends AppCompatActivity {
 
             }
         });
+
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                new profileViewer(arrayList.get(position).getName(), arrayList.get(position).getUrl()).show(getSupportFragmentManager(), "");
+            }
+
+            @Override
+            public void onLongItemClick(View view, int position) {
+
+            }
+        }));
     }
 
     private void initData() {
-        Contacts contacts=new Contacts("Alome", "", "https://github.com/square/picasso/raw/master/website/static/sample.png", false, "", "", "", "", "");
+        Contacts contacts=new Contacts("Alome", "", "https://github.com/square/picasso/raw/master/website/static/sample.png", false, "", "", "", "", "", "");
         arrayList.add(contacts);
 //        contacts=new Contacts("Favour", R.drawable.fav, "https://pbs.twimg.com/profile_images/1291046814825811968/LHpCZmK7_400x400.jpg", true);
 //        arrayList.add(contacts);
 //        contacts=new Contacts("Albert", R.drawable.albeert, "https://pbs.twimg.com/profile_images/1369694863604785152/FU-ou5BJ_400x400.jpg", true);
 //        arrayList.add(contacts);
-//        contacts=new Contacts("Chike", R.drawable.daniel, "https://cdn.pixabay.com/photo/2018/05/03/00/54/blue-butterfly-flower-3370200_150.jpg", true);
+//        contacts=new Contacts("Chike", Rgit pu.drawable.daniel, "https://cdn.pixabay.com/photo/2018/05/03/00/54/blue-butterfly-flower-3370200_150.jpg", true);
 //        arrayList.add(contacts);
 //        contacts=new Contacts("John", R.drawable.daniel, "ddjjd", true);
 //        arrayList.add(contacts);
+        HistoryModel model= new HistoryModel("djsjsjsjs", "12000","credit", new Date());
+        historyArrayList.add(model);
+        model= new HistoryModel("sjsjsjakaka", "40000","debit", new Date());
+        historyArrayList.add(model);
+        model= new HistoryModel("lalalalala;a", "12000","credit", new Date());
+        historyArrayList.add(model);
+//        historyRecycler.setAdapter(historyAdapter);
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void initUI() {
+        new_request=findViewById(R.id.new_request);
         fund=findViewById(R.id.card);
         avatar=findViewById(R.id.profile_image);
         recyclerView=findViewById(R.id.contactRecyclerView);
@@ -106,14 +153,34 @@ public class MainActivity  extends AppCompatActivity {
        String balanceObj= decrypt(crypto, "UIDSOUNPAY123456", iv );
         try {
             JSONObject object=new JSONObject(balanceObj);
+            Log.d("objvaluee", object.toString());
             Spannable span = new SpannableString(Utils.getCurrencySymbol("NGN")+object.getString("balance")+"0");
             span.setSpan(new RelativeSizeSpan(0.5f), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             balance.setText(span);
         } catch (JSONException e) {
+            Log.d("Errrr", e.getMessage());
             e.printStackTrace();
         }
+        Dexter.withContext(MainActivity.this)
+                .withPermissions(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.CALL_PHONE)
+                .withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
+                        if(multiplePermissionsReport.areAllPermissionsGranted()){
+                            getContactList();
 
-        getContactList();
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
+
+                    }
+                }).check();
+        historyAdapter=new HistoryAdapter(this, historyArrayList);
+        historyRecycler=findViewById(R.id.historyRecycler);
+        historyRecycler.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+
 //        getWindow().setStatusBarColor(Color.parseColor("#F2F7FA"));
     }
 
@@ -122,20 +189,19 @@ public class MainActivity  extends AppCompatActivity {
         SharedPreferences sharedPreferences=getSharedPreferences(Constants.SHARED_PREF, MODE_PRIVATE );
         String UID=sharedPreferences.getString(Constants.UID, "");
         FirebaseFirestore db=FirebaseFirestore.getInstance();
-        db.collection("users").document(UID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        db.collection("users").document(FirebaseAuth.getInstance().getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                Contacts contacts=value.toObject(Contacts.class);
-                String sourceString = "Hello "+"<b>" + contacts.getUsername() + "</b> ";
-                name.setText(Html.fromHtml(sourceString));
-                Picasso.get()
-                        .load(contacts.getUrl())
-                        .into(avatar);
+                if (error==null){
+                    Contacts contacts=value.toObject(Contacts.class);
+                    String sourceString = "Hello "+"<b>" + contacts.getUsername() + "</b> ";
+                    name.setText(Html.fromHtml(sourceString));
+                    Picasso.get()
+                            .load(contacts.getUrl())
+                            .into(avatar);
+                }
             }
         });
-        String userName="Daniel";
-
-
     }
 
     private void getContactList() {
@@ -174,31 +240,32 @@ public class MainActivity  extends AppCompatActivity {
     }
 
     private void checkFirebase(String phone, String name) {
-        Log.d("CONT", phone.replace("+234","0"));
         FirebaseFirestore db=FirebaseFirestore.getInstance();
         Query query=db.collection("users").whereEqualTo("number", phone).limit(8);
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
 //                arrayList.clear();
-                for (DocumentSnapshot snapshot:value){
-                    Contacts contacts=snapshot.toObject(Contacts.class);
-                    contacts.setName(name);
-                    contacts.setContact(true);
-                    arrayList.add(contacts);
-                    Set<Contacts> s= new HashSet<Contacts>();
-                    s.addAll(arrayList);
-                    arrayList = new ArrayList<Contacts>();
-                    arrayList.addAll(s);
+                if (error==null){
+                    for (DocumentSnapshot snapshot:value){
+                        Contacts contacts=snapshot.toObject(Contacts.class);
+                        contacts.setName(name);
+                        contacts.setContact(true);
+                        arrayList.add(contacts);
 
-                    Log.d("CONT", new Gson().toJson(contacts));
-                }
-                if (arrayList.size()==1){
-                    recyclerView.setVisibility(View.GONE);
+
+                        Log.d("CONT", new Gson().toJson(contacts));
+                    }
+                    if (arrayList.size()==1){
+                        recyclerView.setVisibility(View.GONE);
+                    }else{
+                        recyclerView.setVisibility(View.VISIBLE);
+                    }
+                    recyclerView.setAdapter(adapter);
+
                 }else{
-                    recyclerView.setVisibility(View.VISIBLE);
+                    Log.d("Error", error.getMessage());
                 }
-                recyclerView.setAdapter(adapter);
 
             }
         });

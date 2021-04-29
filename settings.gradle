@@ -1,3 +1,4 @@
+include ':quiet'
 include ':sound-tech'
 include ':app'
 rootProject.name = "soundPay"
